@@ -101,6 +101,19 @@ RegisterNetEvent('hospital:server:ambulanceAlert', function(text)
 	end
 end)
 
+--個人医通知追加
+RegisterNetEvent('hospital:server:privatedoctorAlert', function(text)
+	local src = source
+	local ped = GetPlayerPed(src)
+	local coords = GetEntityCoords(ped)
+	local players = QBCore.Functions.GetQBPlayers()
+	for _, v in pairs(players) do
+		if v.PlayerData.job.name == 'privatedoctor' and v.PlayerData.job.onduty then
+			TriggerClientEvent('hospital:client:privatedoctorAlert', v.PlayerData.source, coords, text)
+		end
+	end
+end)
+
 RegisterNetEvent('hospital:server:LeaveBed', function(id)
 	TriggerClientEvent('hospital:client:SetBed', -1, id, false)
 end)
@@ -168,10 +181,24 @@ RegisterNetEvent('hospital:server:AddDoctor', function(job)
 		TriggerClientEvent('hospital:client:SetDoctorCount', -1, doctorCount)
 		Doctors[src] = true
 	end
+	--個人医を医者としてカウント
+	if job == 'privatedoctor' then
+		local src = source
+		doctorCount = doctorCount + 1
+		TriggerClientEvent('hospital:client:SetDoctorCount', -1, doctorCount)
+		Doctors[src] = true
+	end
 end)
 
 RegisterNetEvent('hospital:server:RemoveDoctor', function(job)
 	if job == 'ambulance' then
+		local src = source
+		doctorCount = doctorCount - 1
+		TriggerClientEvent('hospital:client:SetDoctorCount', -1, doctorCount)
+		Doctors[src] = nil
+	end
+	--個人医を医者としてカウント
+	if job == 'privatedoctor' then
 		local src = source
 		doctorCount = doctorCount - 1
 		TriggerClientEvent('hospital:client:SetDoctorCount', -1, doctorCount)
@@ -194,7 +221,8 @@ RegisterNetEvent('hospital:server:RevivePlayer', function(playerId, isOldMan)
 	local Patient = QBCore.Functions.GetPlayer(playerId)
 	local oldMan = isOldMan or false
 	if Patient then
-		if Player.PlayerData.job.name == 'ambulance' or QBCore.Functions.HasItem(src, 'firstaid', 1) then
+		--個人医を追加
+		if Player.PlayerData.job.name == 'ambulance' or Player.PlayerData.job.name == 'privatedoctor' or QBCore.Functions.HasItem(src, 'firstaid', 1) then
 			if oldMan then
 				if Player.Functions.RemoveMoney('cash', 5000, 'revived-player') then
 					Player.Functions.RemoveItem('firstaid', 1)
@@ -303,6 +331,10 @@ QBCore.Functions.CreateCallback('hospital:GetDoctors', function(_, cb)
 		if v.PlayerData.job.name == 'ambulance' and v.PlayerData.job.onduty then
 			amount = amount + 1
 		end
+		--個人医を医者としてカウント
+		if v.PlayerData.job.name == 'ambulance' and v.PlayerData.job.onduty then
+			amount = amount + 1
+		end
 	end
 	cb(amount)
 end)
@@ -351,6 +383,21 @@ QBCore.Commands.Add('911e', Lang:t('info.ems_report'), { { name = 'message', hel
 	local players = QBCore.Functions.GetQBPlayers()
 	for _, v in pairs(players) do
 		if v.PlayerData.job.name == 'ambulance' and v.PlayerData.job.onduty then
+			TriggerClientEvent('hospital:client:ambulanceAlert', v.PlayerData.source, coords, message)
+		end
+	end
+end)
+
+--個人医の通知コマンド追加
+QBCore.Commands.Add('911k', Lang:t('info.pdoc_report'), { { name = 'message', help = Lang:t('info.message_sent') } }, false, function(source, args)
+	local src = source
+	local message
+	if args[1] then message = table.concat(args, ' ') else message = Lang:t('info.civ_call') end
+	local ped = GetPlayerPed(src)
+	local coords = GetEntityCoords(ped)
+	local players = QBCore.Functions.GetQBPlayers()
+	for _, v in pairs(players) do
+		if v.PlayerData.job.name == 'privatedoctor' and v.PlayerData.job.onduty then
 			TriggerClientEvent('hospital:client:ambulanceAlert', v.PlayerData.source, coords, message)
 		end
 	end
