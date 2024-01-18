@@ -56,6 +56,9 @@ local Translations = {
         pain_level = '自分や他のプレイヤーの痛みレベルを設定 (Admin専用)',
         kill = '他のプレイヤーまたは自分を殺す (Admin専用)',
         heal_player_a = '他のプレイヤーまたは自分を回復する (Admin専用)',
+        -- 個人医用メッセージ追加
+        pdoc_alert = '個人医アラート - %{text}',
+        pdoc_request_help = ' [~r~K~s~] 個人医に連絡',
     },
     mail = {
         sender = 'Pillbox病院',
