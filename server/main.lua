@@ -196,25 +196,6 @@ RegisterNetEvent('hospital:server:RemoveDoctor', function(job)
 	end
 end)
 
---個人医をカウント
-RegisterNetEvent('hospital:server:AddPrivateDoctor', function(job)
-	if job == 'privatedoctor' then
-		local src = source
-		privatedoctorCount = privatedoctorCount + 1
-		TriggerClientEvent('hospital:client:SetPrivateDoctorCount', -1, privatedoctorCount)
-		PrivateDoctors[src] = true
-	end
-end)
-
-RegisterNetEvent('hospital:server:RemovePrivateDoctor', function(job)
-	if job == 'privatedoctor' then
-		local src = source
-		privatedoctorCount = privatedoctorCount - 1
-		TriggerClientEvent('hospital:client:SetPrivateDoctorCount', -1, privatedoctorCount)
-		PrivateDoctors[src] = nil
-	end
-end)
-
 AddEventHandler('playerDropped', function()
 	local src = source
 	if Doctors[src] then
@@ -222,11 +203,6 @@ AddEventHandler('playerDropped', function()
 		TriggerClientEvent('hospital:client:SetDoctorCount', -1, doctorCount)
 		Doctors[src] = nil
 	end
-	if PrivateDoctors[src] then
-		privatedoctorCount = privatedoctorCount - 1
-		TriggerClientEvent('hospital:client:SetPrivateDoctorCount', -1, privatedoctorCount)
-		PrivateDoctors[src] = nil
-	end	
 end)
 
 RegisterNetEvent('hospital:server:RevivePlayer', function(playerId, isOldMan)
