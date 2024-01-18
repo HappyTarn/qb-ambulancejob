@@ -52,6 +52,7 @@ function OnDeath()
                 TaskPlayAnim(player, deadAnimDict, deadAnim, 1.0, 1.0, -1, 1, 0, 0, 0, 0)
             end
             TriggerServerEvent('hospital:server:ambulanceAlert', Lang:t('info.civ_died'))
+            TriggerServerEvent('hospital:server:privatedoctorAlert', Lang:t('info.civ_died'))
         end
     end
 end
@@ -127,6 +128,7 @@ end)
 -- Threads
 
 emsNotified = false
+pdocNotified = false
 
 CreateThread(function()
     while true do
@@ -146,6 +148,8 @@ CreateThread(function()
             EnableControlAction(0, 249, true)
             EnableControlAction(0, 46, true)
             EnableControlAction(0, 47, true)
+            --個人医通知キー
+            EnableControlAction(0, 45, true)
 
             if isDead then
                 if not isInHospitalBed then
@@ -189,9 +193,21 @@ CreateThread(function()
                         DrawTxt(0.90, 1.40, 1.0, 1.0, 0.6, Lang:t('info.help_requested'), 255, 255, 255, 255)
                     end
 
+                    --個人医通知
+                    if not pdocNotified then
+                        DrawTxt(1.00, 1.40, 1.0, 1.0, 0.6, Lang:t('info.pdoc_request_help '), 255, 255, 255, 255)
+                    else
+                        DrawTxt(0.98, 1.40, 1.0, 1.0, 0.6, Lang:t('info.pdoc_help_requested '), 255, 255, 255, 255)
+                    end
+
                     if IsControlJustPressed(0, 47) and not emsNotified then
                         TriggerServerEvent('hospital:server:ambulanceAlert', Lang:t('info.civ_down'))
                         emsNotified = true
+                    end
+                    --個人医通知（Rキー）
+                    if IsControlJustPressed(0, 45) and not pdocNotified then
+                        TriggerServerEvent('hospital:server:privatedoctorAlert', Lang:t('info.civ_down'))
+                        pdocNotified = true
                     end
                 end
 
