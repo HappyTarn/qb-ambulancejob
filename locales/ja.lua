@@ -59,6 +59,7 @@ local Translations = {
         -- 個人医用メッセージ追加
         pdoc_alert = '個人医アラート - %{text}',
         pdoc_request_help = ' [~r~K~s~] 個人医に連絡',
+        pdoc_help_requested = '個人医に連絡済み',
     },
     mail = {
         sender = 'Pillbox病院',
