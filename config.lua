@@ -72,6 +72,9 @@ Config.Locations = {                -- Edit the various interaction points for p
     ['pdarmory'] = {
         [1] = vector3(309.78, -596.6, 43.29),
     },
+    ['pdduty'] = {
+        [1] = vector3(311.18, -599.25, 43.29),
+    },
     ['beds'] = {
         { coords = vector4(353.1, -584.6, 43.11, 152.08),    taken = false, model = 1631638868 },
         { coords = vector4(356.79, -585.86, 43.11, 152.08),  taken = false, model = 1631638868 },
