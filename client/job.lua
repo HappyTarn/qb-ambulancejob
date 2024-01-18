@@ -307,6 +307,13 @@ local function EMSControls(variable)
                     TriggerEvent('qb-ambulancejob:elevator_main')
                 elseif variable == 'main' then
                     TriggerEvent('qb-ambulancejob:elevator_roof')
+                --個人医追加
+                elseif variable == 'pdsign' then
+                    TriggerEvent('PDOCToggle:Duty')
+                elseif variable == 'pdstash' then
+                    TriggerEvent('qb-ambulancejob:pdstash')
+                elseif variable == 'pdarmory' then
+                    TriggerEvent('qb-ambulancejob:armory') -- 売るものは共通
                 end
             end
             Wait(1)
