@@ -356,7 +356,7 @@ RegisterNetEvent('qb-ambulancejob:armory', function()
 end)
 
 --個人医追加
-RegisterNetEvent('qb-ambulancejob:stash', function()
+RegisterNetEvent('qb-ambulancejob:pdstash', function()
     if onDuty then
         TriggerServerEvent('inventory:server:OpenInventory', 'stash', 'privatedoctorstash_' .. QBCore.Functions.GetPlayerData().citizenid)
         TriggerEvent('inventory:client:SetCurrentStash', 'privatedoctorstash_' .. QBCore.Functions.GetPlayerData().citizenid)
@@ -460,6 +460,14 @@ RegisterNetEvent('EMSToggle:Duty', function()
     onDuty = not onDuty
     TriggerServerEvent('QBCore:ToggleDuty')
     TriggerServerEvent('police:server:UpdateBlips')
+end)
+
+--個人医追加
+RegisterNetEvent('PDOCToggle:Duty', function()
+    onDuty = not onDuty
+    TriggerServerEvent('QBCore:ToggleDuty')
+    --マップ表示はなし
+    --TriggerServerEvent('police:server:UpdateBlips')
 end)
 
 CreateThread(function()
