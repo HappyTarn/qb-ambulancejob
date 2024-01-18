@@ -355,6 +355,14 @@ RegisterNetEvent('qb-ambulancejob:armory', function()
     end
 end)
 
+--個人医追加
+RegisterNetEvent('qb-ambulancejob:stash', function()
+    if onDuty then
+        TriggerServerEvent('inventory:server:OpenInventory', 'stash', 'privatedoctorstash_' .. QBCore.Functions.GetPlayerData().citizenid)
+        TriggerEvent('inventory:client:SetCurrentStash', 'privatedoctorstash_' .. QBCore.Functions.GetPlayerData().citizenid)
+    end
+end)
+
 local CheckVehicle = false
 local function EMSVehicle(k)
     CheckVehicle = true
