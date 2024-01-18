@@ -573,6 +573,69 @@ if Config.UseTarget then
                 distance = 1.5
             })
         end
+        --個人医者追加
+        for k, v in pairs(Config.Locations['pdduty']) do
+            exports['qb-target']:AddBoxZone('pdduty' .. k, vector3(v.x, v.y, v.z), 1.5, 1, {
+                name = 'duty' .. k,
+                debugPoly = false,
+                heading = -20,
+                minZ = v.z - 2,
+                maxZ = v.z + 2,
+            }, {
+                options = {
+                    {
+                        type = 'client',
+                        event = 'PDOCToggle:Duty',
+                        icon = 'fa fa-clipboard',
+                        label = 'Sign In/Off duty',
+                        job = 'privatedoctor'
+                    }
+                },
+                distance = 1.5
+            })
+        end
+        --個人医者追加
+        for k, v in pairs(Config.Locations['pdstash']) do
+            exports['qb-target']:AddBoxZone('pdstash' .. k, vector3(v.x, v.y, v.z), 1, 1, {
+                name = 'stash' .. k,
+                debugPoly = false,
+                heading = -20,
+                minZ = v.z - 2,
+                maxZ = v.z + 2,
+            }, {
+                options = {
+                    {
+                        type = 'client',
+                        event = 'qb-ambulancejob:pdstash',
+                        icon = 'fa fa-hand',
+                        label = 'Open Stash',
+                        job = 'privatedoctor'
+                    }
+                },
+                distance = 1.5
+            })
+        end
+        --個人医者追加
+        for k, v in pairs(Config.Locations['pdarmory']) do
+            exports['qb-target']:AddBoxZone('pdarmory' .. k, vector3(v.x, v.y, v.z), 1, 1, {
+                name = 'armory' .. k,
+                debugPoly = false,
+                heading = -20,
+                minZ = v.z - 2,
+                maxZ = v.z + 2,
+            }, {
+                options = {
+                    {
+                        type = 'client',
+                        event = 'qb-ambulancejob:armory',
+                        icon = 'fa fa-hand',
+                        label = 'Open Armory',
+                        job = 'privatedoctor'
+                    }
+                },
+                distance = 1.5
+            })
+        end
         for k, v in pairs(Config.Locations['roof']) do
             exports['qb-target']:AddBoxZone('roof' .. k, vector3(v.x, v.y, v.z), 2, 2, {
                 name = 'roof' .. k,
@@ -684,6 +747,79 @@ else
                 if onDuty then
                     exports['qb-core']:DrawText(Lang:t('text.armory_button'), 'left')
                     EMSControls('armory')
+                end
+            else
+                check = false
+                exports['qb-core']:HideText()
+            end
+        end)
+
+        --個人医追加
+        local pdignPoly = {}
+        for k, v in pairs(Config.Locations['pdduty']) do
+            pdignPoly[#pdignPoly + 1] = BoxZone:Create(vector3(vector3(v.x, v.y, v.z)), 1.5, 1, {
+                name = 'sign' .. k,
+                debugPoly = false,
+                heading = -20,
+                minZ = v.z - 2,
+                maxZ = v.z + 2,
+            })
+        end
+        local pdsignCombo = ComboZone:Create(pdignPoly, { name = 'pdsigncombo', debugPoly = false })
+        pdsignCombo:onPlayerInOut(function(isPointInside)
+            if isPointInside and PlayerJob.name == 'privatedoctor' then
+                if not onDuty then
+                    exports['qb-core']:DrawText(Lang:t('text.onduty_button'), 'left')
+                    EMSControls('pdsign')
+                else
+                    exports['qb-core']:DrawText(Lang:t('text.offduty_button'), 'left')
+                    EMSControls('pdsign')
+                end
+            else
+                check = false
+                exports['qb-core']:HideText()
+            end
+        end)
+        --個人医追加
+        local pdstashPoly = {}
+        for k, v in pairs(Config.Locations['pdstash']) do
+            pdstashPoly[#pdstashPoly + 1] = BoxZone:Create(vector3(vector3(v.x, v.y, v.z)), 1, 1, {
+                name = 'stash' .. k,
+                debugPoly = false,
+                heading = -20,
+                minZ = v.z - 2,
+                maxZ = v.z + 2,
+            })
+        end
+        local pdstashCombo = ComboZone:Create(pdstashPoly, { name = 'pdstashCombo', debugPoly = false })
+        pdstashCombo:onPlayerInOut(function(isPointInside)
+            if isPointInside and PlayerJob.name == 'privatedoctor' then
+                if onDuty then
+                    exports['qb-core']:DrawText(Lang:t('text.pstash_button'), 'left')
+                    EMSControls('pdstash')
+                end
+            else
+                check = false
+                exports['qb-core']:HideText()
+            end
+        end)
+        --個人医追加
+        local pdarmoryPoly = {}
+        for k, v in pairs(Config.Locations['pdarmory']) do
+            pdarmoryPoly[#pdarmoryPoly + 1] = BoxZone:Create(vector3(vector3(v.x, v.y, v.z)), 1, 1, {
+                name = 'armory' .. k,
+                debugPoly = false,
+                heading = 70,
+                minZ = v.z - 2,
+                maxZ = v.z + 2,
+            })
+        end
+        local pdarmoryCombo = ComboZone:Create(pdarmoryPoly, { name = 'pdarmoryCombo', debugPoly = false })
+        pdarmoryCombo:onPlayerInOut(function(isPointInside)
+            if isPointInside and PlayerJob.name == 'privatedoctor' then
+                if onDuty then
+                    exports['qb-core']:DrawText(Lang:t('text.armory_button'), 'left')
+                    EMSControls('pdarmory')
                 end
             else
                 check = false
