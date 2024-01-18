@@ -5,6 +5,10 @@ local doctorCount = 0
 local doctorCalled = false
 local Doctors = {}
 
+-- 個人医カウント
+local privatedoctorCount = 0
+local PrivateDoctors = {}
+
 -- Events
 
 -- Compatibility with txAdmin Menu's heal options.
@@ -181,13 +185,6 @@ RegisterNetEvent('hospital:server:AddDoctor', function(job)
 		TriggerClientEvent('hospital:client:SetDoctorCount', -1, doctorCount)
 		Doctors[src] = true
 	end
-	--個人医を医者としてカウント
-	if job == 'privatedoctor' then
-		local src = source
-		doctorCount = doctorCount + 1
-		TriggerClientEvent('hospital:client:SetDoctorCount', -1, doctorCount)
-		Doctors[src] = true
-	end
 end)
 
 RegisterNetEvent('hospital:server:RemoveDoctor', function(job)
@@ -197,12 +194,24 @@ RegisterNetEvent('hospital:server:RemoveDoctor', function(job)
 		TriggerClientEvent('hospital:client:SetDoctorCount', -1, doctorCount)
 		Doctors[src] = nil
 	end
-	--個人医を医者としてカウント
+end)
+
+--個人医をカウント
+RegisterNetEvent('hospital:server:AddPrivateDoctor', function(job)
 	if job == 'privatedoctor' then
 		local src = source
-		doctorCount = doctorCount - 1
-		TriggerClientEvent('hospital:client:SetDoctorCount', -1, doctorCount)
-		Doctors[src] = nil
+		privatedoctorCount = privatedoctorCount + 1
+		TriggerClientEvent('hospital:client:SetPrivateDoctorCount', -1, privatedoctorCount)
+		PrivateDoctors[src] = true
+	end
+end)
+
+RegisterNetEvent('hospital:server:RemovePrivateDoctor', function(job)
+	if job == 'privatedoctor' then
+		local src = source
+		privatedoctorCount = privatedoctorCount - 1
+		TriggerClientEvent('hospital:client:SetPrivateDoctorCount', -1, privatedoctorCount)
+		PrivateDoctors[src] = nil
 	end
 end)
 
@@ -213,6 +222,11 @@ AddEventHandler('playerDropped', function()
 		TriggerClientEvent('hospital:client:SetDoctorCount', -1, doctorCount)
 		Doctors[src] = nil
 	end
+	if PrivateDoctors[src] then
+		privatedoctorCount = privatedoctorCount - 1
+		TriggerClientEvent('hospital:client:SetPrivateDoctorCount', -1, privatedoctorCount)
+		PrivateDoctors[src] = nil
+	end	
 end)
 
 RegisterNetEvent('hospital:server:RevivePlayer', function(playerId, isOldMan)
@@ -331,10 +345,6 @@ QBCore.Functions.CreateCallback('hospital:GetDoctors', function(_, cb)
 		if v.PlayerData.job.name == 'ambulance' and v.PlayerData.job.onduty then
 			amount = amount + 1
 		end
-		--個人医を医者としてカウント
-		if v.PlayerData.job.name == 'ambulance' and v.PlayerData.job.onduty then
-			amount = amount + 1
-		end
 	end
 	cb(amount)
 end)
@@ -406,7 +416,8 @@ end)
 QBCore.Commands.Add('status', Lang:t('info.check_health'), {}, false, function(source, _)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
-	if Player.PlayerData.job.name == 'ambulance' then
+	-- 個人医者追加
+	if Player.PlayerData.job.name == 'ambulance' or Player.PlayerData.job.name == 'privatedoctor' then
 		TriggerClientEvent('hospital:client:CheckStatus', src)
 	else
 		TriggerClientEvent('QBCore:Notify', src, Lang:t('error.not_ems'), 'error')
@@ -416,7 +427,8 @@ end)
 QBCore.Commands.Add('heal', Lang:t('info.heal_player'), {}, false, function(source, _)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
-	if Player.PlayerData.job.name == 'ambulance' then
+	-- 個人医者追加
+	if Player.PlayerData.job.name == 'ambulance' or Player.PlayerData.job.name == 'privatedoctor' then
 		TriggerClientEvent('hospital:client:TreatWounds', src)
 	else
 		TriggerClientEvent('QBCore:Notify', src, Lang:t('error.not_ems'), 'error')
@@ -426,7 +438,8 @@ end)
 QBCore.Commands.Add('revivep', Lang:t('info.revive_player'), {}, false, function(source, _)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
-	if Player.PlayerData.job.name == 'ambulance' then
+	-- 個人医者追加
+	if Player.PlayerData.job.name == 'ambulance' or Player.PlayerData.job.name == 'privatedoctor' then
 		TriggerClientEvent('hospital:client:RevivePlayer', src)
 	else
 		TriggerClientEvent('QBCore:Notify', src, Lang:t('error.not_ems'), 'error')
