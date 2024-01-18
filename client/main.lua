@@ -563,6 +563,7 @@ RegisterNetEvent('hospital:client:ambulanceAlert', function(coords, text)
     end
 end)
 
+--個人医通知追加
 RegisterNetEvent('hospital:client:privatedoctorAlert', function(coords, text)
     local street1, street2 = GetStreetNameAtCoord(coords.x, coords.y, coords.z)
     local street1name = GetStreetNameFromHashKey(street1)
